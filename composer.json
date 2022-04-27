@@ -1,13 +1,10 @@
 {
-    "name":         "ezsystems/job-queue-bundle",
+    "name":         "jms/job-queue-bundle",
     "description":  "Allows to run and schedule Symfony console commands as background jobs.",
     "keywords":     ["job","queue", "background", "cron", "scheduled"],
     "homepage":     "http://jmsyst.com/bundles/JMSJobQueueBundle",
     "type":         "symfony-bundle",
     "license":      "Apache-2.0",
-    "replace": {
-        "jms/job-queue-bundle": "self.version"
-    },
     "authors": [
         {
             "name":   "Johannes M. Schmitt",
