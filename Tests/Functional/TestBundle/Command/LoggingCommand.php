@@ -2,13 +2,13 @@
 
 namespace JMS\JobQueueBundle\Tests\Functional\TestBundle\Command;
 
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class LoggingCommand extends Command
+class LoggingCommand extends ContainerAwareCommand
 {
     protected function configure()
     {

@@ -22,7 +22,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\JobQueueBundle\Exception\InvalidStateTransitionException;
 use JMS\JobQueueBundle\Exception\LogicException;
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
+use Symfony\Component\Debug\Exception\FlattenException;
 
 /**
  * @ORM\Entity
@@ -35,7 +35,6 @@ use Symfony\Component\ErrorHandler\Exception\FlattenException;
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
 class Job
-
 {
     /** State if job is inserted, but not yet ready to be started. */
     const STATE_NEW = 'new';
@@ -123,7 +122,7 @@ class Job
     /** @ORM\Column(type = "string") */
     private $command;
 
-    /** @ORM\Column(type = "json") */
+    /** @ORM\Column(type = "json_array") */
     private $args;
 
     /**

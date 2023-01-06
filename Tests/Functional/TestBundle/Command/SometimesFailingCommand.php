@@ -2,12 +2,11 @@
 
 namespace JMS\JobQueueBundle\Tests\Functional\TestBundle\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
-class SometimesFailingCommand extends Command
+class SometimesFailingCommand extends \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand
 {
     protected function configure()
     {
@@ -30,6 +29,6 @@ class SometimesFailingCommand extends Command
 
         $output->writeln('Success.');
 
-        return Command::SUCCESS;
+        return 0;
     }
 }

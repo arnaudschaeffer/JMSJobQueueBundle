@@ -34,7 +34,7 @@ class MarkJobIncompleteCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var EntityManager $em */
         $em = $this->registry->getManagerForClass(Job::class);
@@ -52,6 +52,6 @@ class MarkJobIncompleteCommand extends Command
 
         $this->jobManager->closeJob($job, Job::STATE_INCOMPLETE);
 
-        return Command::SUCCESS;
+        return 0;
     }
 }

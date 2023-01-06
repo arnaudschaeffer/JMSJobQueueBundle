@@ -18,7 +18,7 @@
 
 namespace JMS\JobQueueBundle\Command;
 
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 use JMS\JobQueueBundle\Entity\Job;
 use JMS\JobQueueBundle\Entity\Repository\JobManager;
 use JMS\JobQueueBundle\Event\NewOutputEvent;
@@ -90,7 +90,7 @@ class RunCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $startTime = time();
 
@@ -150,7 +150,7 @@ class RunCommand extends Command
             $this->queueOptions
         );
 
-        return Command::SUCCESS;
+        return 0;
     }
 
     private function runJobs($workerName, $startTime, $maxRuntime, $idleTime, $maxJobs, array $restrictedQueues, array $queueOptionsDefaults, array $queueOptions)
@@ -274,10 +274,6 @@ class RunCommand extends Command
         return $runningJobsPerQueue;
     }
 
-    /**
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     private function checkRunningJobs()
     {
         foreach ($this->runningJobs as $i => &$data) {
@@ -329,7 +325,7 @@ class RunCommand extends Command
                 $data['job']->checked();
                 $em = $this->getEntityManager();
                 $em->persist($data['job']);
-                $em->flush();
+                $em->flush($data['job']);
 
                 continue;
             }
@@ -372,7 +368,7 @@ class RunCommand extends Command
         $job->setState(Job::STATE_RUNNING);
         $em = $this->getEntityManager();
         $em->persist($job);
-        $em->flush();
+        $em->flush($job);
 
         $args = $this->getBasicCommandLineArgs();
         $args[] = $job->getCommand();
@@ -449,8 +445,8 @@ class RunCommand extends Command
         return $args;
     }
 
-    private function getEntityManager(): ObjectManager
+    private function getEntityManager(): EntityManager
     {
-        return /** @var ObjectManager */ $this->registry->getManagerForClass('JMSJobQueueBundle:Job');
+        return /** @var EntityManager */ $this->registry->getManagerForClass('JMSJobQueueBundle:Job');
     }
 }
