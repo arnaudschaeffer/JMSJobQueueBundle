@@ -7,12 +7,13 @@ declare(ticks = 10000000);
 use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 
+use JMS\JobQueueBundle\Entity\Job;
 use Symfony\Bundle\FrameworkBundle\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Records debugging information for executed commands.
@@ -102,6 +103,6 @@ class Application extends BaseApplication
 
     private function getConnection()
     {
-        return $this->getKernel()->getContainer()->get('doctrine')->getManagerForClass('JMSJobQueueBundle:Job')->getConnection();
+        return $this->getKernel()->getContainer()->get('doctrine')->getManagerForClass(Job::class)->getConnection();
     }
 }

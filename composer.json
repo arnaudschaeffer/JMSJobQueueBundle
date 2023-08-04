@@ -1,10 +1,13 @@
 {
-    "name":         "jms/job-queue-bundle",
-    "description":  "Allows to run and schedule Symfony console commands as background jobs.",
+    "name":         "zolex/job-queue-bundle",
+    "description":  "Support for PHP 8, Symfony 5 and Doctrine Common 3",
     "keywords":     ["job","queue", "background", "cron", "scheduled"],
     "homepage":     "http://jmsyst.com/bundles/JMSJobQueueBundle",
     "type":         "symfony-bundle",
     "license":      "Apache-2.0",
+    "replace": {
+        "jms/job-queue-bundle": "*"
+    },
     "authors": [
         {
             "name":   "Johannes M. Schmitt",
@@ -12,11 +15,11 @@
         }
     ],
     "require": {
-        "php": "^7.1 | ^8.0",
-        "symfony/framework-bundle": "^4.0 || ^5.0",
-        "symfony/debug": "^4.0 || ^5.0",
-        "doctrine/common": "^3.1",
-        "symfony/process": "^4.0 || ^5.0"
+        "php": "^7.3|^8.0",
+        "symfony/framework-bundle": "^5.0",
+        "symfony/error-handler": "^5.0",
+        "doctrine/common": "^3.0",
+        "symfony/process": "^5.0"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "*",
@@ -26,12 +29,11 @@
         "symfony/browser-kit": "*",
         "symfony/finder": "*",
         "symfony/css-selector": "*",
-        "doctrine/doctrine-bundle": "*",
         "doctrine/orm": "*",
         "symfony/twig-bundle": "*",
         "symfony/form": "*",
         "symfony/validator": "*",
-        "phpunit/phpunit": "^6.0",
+        "phpunit/phpunit": "^9.4",
         "symfony/intl": "*"
     },
     "suggest": {
@@ -44,7 +46,7 @@
     "target-dir": "JMS/JobQueueBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev"
+            "dev-master": "4.0.x-dev"
         }
     }
 }

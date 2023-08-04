@@ -1,4 +1,9 @@
-JMSJobQueueBundle [![Build Status](https://secure.travis-ci.org/schmittjoh/JMSJobQueueBundle.png?branch=master)](http://travis-ci.org/schmittjoh/JMSJobQueueBundle)
+Support for PHP 8, Symfony 5 and Doctrine Common 3
+
+[![Build Status](https://travis-ci.com/zolex/JMSJobQueueBundle.svg?branch=master)](https://travis-ci.com/zolex/JMSJobQueueBundle)
+
+
+JMSJobQueueBundle
 =================
 
 Documentation: 

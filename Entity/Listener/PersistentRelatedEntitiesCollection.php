@@ -513,7 +513,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
             return;
         }
 
-        $con = $this->registry->getManagerForClass('JMSJobQueueBundle:Job')->getConnection();
+        $con = $this->registry->getManagerForClass(Job::class)->getConnection();
         $entitiesPerClass = array();
         $count = 0;
         foreach ($con->query("SELECT related_class, related_id FROM jms_job_related_entities WHERE job_id = ".$this->job->getId()) as $data) {
@@ -531,7 +531,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
         foreach ($entitiesPerClass as $className => $ids) {
             $em = $this->registry->getManagerForClass($className);
             $qb = $em->createQueryBuilder()
-                        ->select('e')->from($className, 'e');
+                ->select('e')->from($className, 'e');
 
             $i = 0;
             foreach ($ids as $id) {
@@ -553,5 +553,15 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
         }
 
         $this->entities = $entities;
+    }
+
+    public function findFirst(Closure $p)
+    {
+        throw new \LogicException('findFirst() is not supported.');
+    }
+
+    public function reduce(Closure $func, $initial = null)
+    {
+        throw new \LogicException('reduce() is not supported.');
     }
 }

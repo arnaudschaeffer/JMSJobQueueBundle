@@ -1,9 +1,7 @@
 <?php
 
 namespace JMS\JobQueueBundle\Entity\Listener;
-
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\Persistence\ManagerRegistry;
 use JMS\JobQueueBundle\Entity\Job;
 
 /**
@@ -21,17 +19,17 @@ class ManyToAnyListener
     private $registry;
     private $ref;
 
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(\Doctrine\Persistence\ManagerRegistry $registry)
     {
         $this->registry = $registry;
         $this->ref = new \ReflectionProperty('JMS\JobQueueBundle\Entity\Job', 'relatedEntities');
         $this->ref->setAccessible(true);
     }
 
-    public function postLoad(LifecycleEventArgs $event)
+    public function postLoad(\Doctrine\ORM\Event\LifecycleEventArgs $event)
     {
         $entity = $event->getEntity();
-        if ( ! $entity instanceof Job) {
+        if ( ! $entity instanceof \JMS\JobQueueBundle\Entity\Job) {
             return;
         }
 
@@ -46,15 +44,15 @@ class ManyToAnyListener
         }
 
         $con = $event->getEntityManager()->getConnection();
-        $con->executeStatement("DELETE FROM jms_job_related_entities WHERE job_id = :id", array(
+        $con->executeUpdate("DELETE FROM jms_job_related_entities WHERE job_id = :id", array(
             'id' => $entity->getId(),
         ));
     }
 
-    public function postPersist(LifecycleEventArgs $event)
+    public function postPersist(\Doctrine\ORM\Event\LifecycleEventArgs $event)
     {
         $entity = $event->getEntity();
-        if ( ! $entity instanceof Job) {
+        if ( ! $entity instanceof \JMS\JobQueueBundle\Entity\Job) {
             return;
         }
 
@@ -68,7 +66,7 @@ class ManyToAnyListener
                 throw new \RuntimeException('The identifier for the related entity "'.$relClass.'" was empty.');
             }
 
-            $con->executeStatement("INSERT INTO jms_job_related_entities (job_id, related_class, related_id) VALUES (:jobId, :relClass, :relId)", array(
+            $con->executeUpdate("INSERT INTO jms_job_related_entities (job_id, related_class, related_id) VALUES (:jobId, :relClass, :relId)", array(
                 'jobId' => $entity->getId(),
                 'relClass' => $relClass,
                 'relId' => json_encode($relId),

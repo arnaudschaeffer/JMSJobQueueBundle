@@ -41,7 +41,7 @@ class ScheduleCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $maxRuntime = $input->getOption('max-runtime');
         if ($maxRuntime > 300) {
@@ -82,7 +82,7 @@ class ScheduleCommand extends Command
             }
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
@@ -106,7 +106,7 @@ class ScheduleCommand extends Command
                 $job = $scheduler->createJob($name, $lastRunAt);
                 $em = $this->registry->getManagerForClass(Job::class);
                 $em->persist($job);
-                $em->flush($job);
+                $em->flush();
             }
         }
     }

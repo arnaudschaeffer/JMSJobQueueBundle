@@ -22,7 +22,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
@@ -48,9 +47,9 @@ class JobManager
 
     public function findJob($command, array $args = array())
     {
-        return $this->getJobManager()->createQuery("SELECT j FROM JMSJobQueueBundle:Job j WHERE j.command = :command AND j.args = :args")
+        return $this->getJobManager()->createQuery("SELECT j FROM " . Job::class . " j WHERE j.command = :command AND j.args = :args")
             ->setParameter('command', $command)
-            ->setParameter('args', $args, Types::JSON_ARRAY)
+            ->setParameter('args', $args, Type::JSON_ARRAY)
             ->setMaxResults(1)
             ->getOneOrNullResult();
     }
@@ -72,9 +71,9 @@ class JobManager
 
         $job = new Job($command, $args, false);
         $this->getJobManager()->persist($job);
-        $this->getJobManager()->flush($job);
+        $this->getJobManager()->flush();
 
-        $firstJob = $this->getJobManager()->createQuery("SELECT j FROM JMSJobQueueBundle:Job j WHERE j.command = :command AND j.args = :args ORDER BY j.id ASC")
+        $firstJob = $this->getJobManager()->createQuery("SELECT j FROM " . Job::class . " j WHERE j.command = :command AND j.args = :args ORDER BY j.id ASC")
              ->setParameter('command', $command)
              ->setParameter('args', $args, 'json_array')
              ->setMaxResults(1)
@@ -83,13 +82,13 @@ class JobManager
         if ($firstJob === $job) {
             $job->setState(Job::STATE_PENDING);
             $this->getJobManager()->persist($job);
-            $this->getJobManager()->flush($job);
+            $this->getJobManager()->flush;
 
             return $job;
         }
 
         $this->getJobManager()->remove($job);
-        $this->getJobManager()->flush($job);
+        $this->getJobManager()->flush();
 
         return $firstJob;
     }
@@ -114,7 +113,7 @@ class JobManager
 
     private function acquireLock($workerName, Job $job)
     {
-        $affectedRows = $this->getJobManager()->getConnection()->executeStatement(
+        $affectedRows = $this->getJobManager()->getConnection()->executeUpdate(
             "UPDATE jms_jobs SET workerName = :worker WHERE id = :id AND workerName IS NULL",
             array(
                 'worker' => $workerName,
@@ -136,7 +135,7 @@ class JobManager
         list($relClass, $relId) = $this->getRelatedEntityIdentifier($relatedEntity);
 
         $rsm = new ResultSetMappingBuilder($this->getJobManager());
-        $rsm->addRootEntityFromClassMetadata('JMSJobQueueBundle:Job', 'j');
+        $rsm->addRootEntityFromClassMetadata(Job::class, 'j');
 
         return $this->getJobManager()->createNativeQuery("SELECT j.* FROM jms_jobs j INNER JOIN jms_job_related_entities r ON r.job_id = j.id WHERE r.related_class = :relClass AND r.related_id = :relId", $rsm)
                     ->setParameter('relClass', $relClass)
@@ -154,7 +153,7 @@ class JobManager
         list($relClass, $relId) = $this->getRelatedEntityIdentifier($relatedEntity);
 
         $rsm = new ResultSetMappingBuilder($this->getJobManager());
-        $rsm->addRootEntityFromClassMetadata('JMSJobQueueBundle:Job', 'j');
+        $rsm->addRootEntityFromClassMetadata(Job::class, 'j');
 
         $sql = "SELECT j.* FROM jms_jobs j INNER JOIN jms_job_related_entities r ON r.job_id = j.id WHERE r.related_class = :relClass AND r.related_id = :relId AND j.command = :command";
         $params = new ArrayCollection();
@@ -197,7 +196,7 @@ class JobManager
     public function findPendingJob(array $excludedIds = array(), array $excludedQueues = array(), array $restrictedQueues = array())
     {
         $qb = $this->getJobManager()->createQueryBuilder();
-        $qb->select('j')->from('JMSJobQueueBundle:Job', 'j')
+        $qb->select('j')->from(Job::class, 'j')
             ->orderBy('j.priority', 'ASC')
             ->addOrderBy('j.id', 'ASC');
 
@@ -361,7 +360,7 @@ class JobManager
             return array();
         }
 
-        return $this->getJobManager()->createQuery("SELECT j, d FROM JMSJobQueueBundle:Job j LEFT JOIN j.dependencies d WHERE j.id IN (:ids)")
+        return $this->getJobManager()->createQuery("SELECT j, d FROM " . Job::class . " j LEFT JOIN j.dependencies d WHERE j.id IN (:ids)")
                     ->setParameter('ids', $jobIds)
                     ->getResult();
     }
@@ -376,7 +375,7 @@ class JobManager
             return array();
         }
 
-        return $this->getJobManager()->createQuery("SELECT j FROM JMSJobQueueBundle:Job j WHERE j.id IN (:ids)")
+        return $this->getJobManager()->createQuery("SELECT j FROM " . Job::class . " j WHERE j.id IN (:ids)")
                     ->setParameter('ids', $jobIds)
                     ->getResult();
     }
@@ -392,7 +391,7 @@ class JobManager
 
     public function findLastJobsWithError($nbJobs = 10)
     {
-        return $this->getJobManager()->createQuery("SELECT j FROM JMSJobQueueBundle:Job j WHERE j.state IN (:errorStates) AND j.originalJob IS NULL ORDER BY j.closedAt DESC")
+        return $this->getJobManager()->createQuery("SELECT j FROM " . Job::class . " j WHERE j.state IN (:errorStates) AND j.originalJob IS NULL ORDER BY j.closedAt DESC")
                     ->setParameter('errorStates', array(Job::STATE_TERMINATED, Job::STATE_FAILED))
                     ->setMaxResults($nbJobs)
                     ->getResult();
@@ -400,7 +399,7 @@ class JobManager
 
     public function getAvailableQueueList()
     {
-        $queues =  $this->getJobManager()->createQuery("SELECT DISTINCT j.queue FROM JMSJobQueueBundle:Job j WHERE j.state IN (:availableStates)  GROUP BY j.queue")
+        $queues =  $this->getJobManager()->createQuery("SELECT DISTINCT j.queue FROM " . Job::class . " j WHERE j.state IN (:availableStates)  GROUP BY j.queue")
             ->setParameter('availableStates', array(Job::STATE_RUNNING, Job::STATE_NEW, Job::STATE_PENDING))
             ->getResult();
 
@@ -417,7 +416,7 @@ class JobManager
 
     public function getAvailableJobsForQueueCount($jobQueue)
     {
-        $result = $this->getJobManager()->createQuery("SELECT j.queue FROM JMSJobQueueBundle:Job j WHERE j.state IN (:availableStates) AND j.queue = :queue")
+        $result = $this->getJobManager()->createQuery("SELECT j.queue FROM " . Job::class . " j WHERE j.state IN (:availableStates) AND j.queue = :queue")
             ->setParameter('availableStates', array(Job::STATE_RUNNING, Job::STATE_NEW, Job::STATE_PENDING))
             ->setParameter('queue', $jobQueue)
             ->setMaxResults(1)
