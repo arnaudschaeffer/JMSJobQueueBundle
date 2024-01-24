@@ -5,15 +5,17 @@ namespace JMS\JobQueueBundle\Command;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
 use JMS\JobQueueBundle\Entity\Job;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use JMS\JobQueueBundle\Entity\Repository\JobManager;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
+#[AsCommand(name: self::COMMAND_NAME)]
 class MarkJobIncompleteCommand extends Command
 {
-    protected static $defaultName = 'jms-job-queue:mark-incomplete';
+    public const string COMMAND_NAME = 'jms-job-queue:mark-incomplete';
 
     private $registry;
     private $jobManager;
@@ -26,7 +28,7 @@ class MarkJobIncompleteCommand extends Command
         $this->jobManager = $jobManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Internal command (do not use). It marks jobs as incomplete.')

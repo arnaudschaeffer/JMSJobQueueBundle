@@ -25,6 +25,7 @@ use JMS\JobQueueBundle\Event\NewOutputEvent;
 use JMS\JobQueueBundle\Event\StateChangeEvent;
 use JMS\JobQueueBundle\Exception\InvalidArgumentException;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,9 +34,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
+#[AsCommand(name: self::COMMAND_NAME)]
 class RunCommand extends Command
 {
-    protected static $defaultName = 'jms-job-queue:run';
+    public const string COMMAND_NAME = 'jms-job-queue:run';
 
     /** @var string */
     private $env;
@@ -78,7 +80,7 @@ class RunCommand extends Command
         $this->queueOptions = $queueOptions;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Runs jobs from the queue.')

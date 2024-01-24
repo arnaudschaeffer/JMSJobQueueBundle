@@ -7,14 +7,16 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use JMS\JobQueueBundle\Entity\Job;
 use JMS\JobQueueBundle\Entity\Repository\JobManager;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: self::COMMAND_NAME)]
 class CleanUpCommand extends Command
 {
-    protected static $defaultName = 'jms-job-queue:clean-up';
+    public const string COMMAND_NAME = 'jms-job-queue:clean-up';
 
     private $jobManager;
     private $registry;
@@ -27,7 +29,7 @@ class CleanUpCommand extends Command
         $this->registry = $registry;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Cleans up jobs which exceed the maximum retention time.')

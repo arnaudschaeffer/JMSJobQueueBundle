@@ -318,7 +318,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param mixed $key
      * @param mixed $value
      */
-    public function set($key, $value)
+    public function set($key, $value): void
     {
         throw new \LogicException('set() is not supported.');
     }
@@ -445,7 +445,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
     /**
      * Clears the collection.
      */
-    public function clear()
+    public function clear(): void
     {
         throw new \LogicException('clear() is not supported.');
     }
@@ -555,12 +555,12 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
         $this->entities = $entities;
     }
 
-    public function findFirst(Closure $p)
+    public function findFirst(Closure $p): mixed
     {
         throw new \LogicException('findFirst() is not supported.');
     }
 
-    public function reduce(Closure $func, $initial = null)
+    public function reduce(Closure $func, $initial = null): mixed
     {
         throw new \LogicException('reduce() is not supported.');
     }
