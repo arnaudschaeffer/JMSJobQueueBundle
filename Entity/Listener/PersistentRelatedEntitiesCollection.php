@@ -19,16 +19,12 @@ use JMS\JobQueueBundle\Entity\Job;
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class PersistentRelatedEntitiesCollection implements Collection, Selectable
+class PersistentRelatedEntitiesCollection implements Collection, Selectable, \Stringable
 {
-    private $registry;
-    private $job;
     private $entities;
 
-    public function __construct(ManagerRegistry $registry, Job $job)
+    public function __construct(private readonly ManagerRegistry $registry, private readonly Job $job)
     {
-        $this->registry = $registry;
-        $this->job = $job;
     }
 
     /**
@@ -36,6 +32,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return array<object> The PHP array representation of this collection.
      */
+    #[\Override]
     public function toArray()
     {
         $this->initialize();
@@ -49,6 +46,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return object|false
      */
+    #[\Override]
     public function first()
     {
         $this->initialize();
@@ -62,6 +60,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return object|false
      */
+    #[\Override]
     public function last()
     {
         $this->initialize();
@@ -74,6 +73,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return string|integer
      */
+    #[\Override]
     public function key()
     {
         $this->initialize();
@@ -86,6 +86,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return object|false
      */
+    #[\Override]
     public function next()
     {
         $this->initialize();
@@ -98,6 +99,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return object|false
      */
+    #[\Override]
     public function current()
     {
         $this->initialize();
@@ -111,7 +113,8 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param string|integer $key
      * @return object|null The removed element or NULL, if no element exists for the given key.
      */
-    public function remove($key)
+    #[\Override]
+    public function remove($key): never
     {
         throw new \LogicException('remove() is not supported.');
     }
@@ -122,7 +125,8 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param object $element The element to remove.
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeElement($element)
+    #[\Override]
+    public function removeElement($element): never
     {
         throw new \LogicException('removeElement() is not supported.');
     }
@@ -132,10 +136,10 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @see containsKey()
      *
-     * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($offset): bool
+    #[\Override]
+    public function offsetExists(mixed $offset): bool
     {
         $this->initialize();
 
@@ -147,10 +151,10 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @see get()
      *
-     * @param mixed $offset
      * @return mixed
      */
-    public function offsetGet($offset): mixed
+    #[\Override]
+    public function offsetGet(mixed $offset): mixed
     {
         $this->initialize();
 
@@ -163,11 +167,10 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @see add()
      * @see set()
      *
-     * @param mixed $offset
-     * @param mixed $value
      * @return bool
      */
-    public function offsetSet($offset, $value): void
+    #[\Override]
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new \LogicException('Adding new related entities is not supported after initial creation.');
     }
@@ -177,10 +180,10 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @see remove()
      *
-     * @param mixed $offset
      * @return mixed
      */
-    public function offsetUnset($offset): void
+    #[\Override]
+    public function offsetUnset(mixed $offset): void
     {
         throw new \LogicException('unset() is not supported.');
     }
@@ -191,6 +194,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param mixed $key The key to check for.
      * @return boolean TRUE if the given key/index exists, FALSE otherwise.
      */
+    #[\Override]
     public function containsKey($key)
     {
         $this->initialize();
@@ -208,6 +212,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @return boolean TRUE if the given element is contained in the collection,
      *          FALSE otherwise.
      */
+    #[\Override]
     public function contains($element)
     {
         $this->initialize();
@@ -227,6 +232,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param Closure $p The predicate.
      * @return boolean TRUE if the predicate is TRUE for at least one element, FALSE otherwise.
      */
+    #[\Override]
     public function exists(Closure $p)
     {
         $this->initialize();
@@ -248,6 +254,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param mixed $element The element to search for.
      * @return mixed The key/index of the element or FALSE if the element was not found.
      */
+    #[\Override]
     public function indexOf($element)
     {
         $this->initialize();
@@ -261,14 +268,11 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param mixed $key The key.
      * @return mixed The element or NULL, if no element exists for the given key.
      */
+    #[\Override]
     public function get($key)
     {
         $this->initialize();
-
-        if (isset($this->entities[$key])) {
-            return $this->entities[$key];
-        }
-        return null;
+        return $this->entities[$key] ?? null;
     }
 
     /**
@@ -276,6 +280,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return array
      */
+    #[\Override]
     public function getKeys()
     {
         $this->initialize();
@@ -288,6 +293,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return array
      */
+    #[\Override]
     public function getValues()
     {
         $this->initialize();
@@ -302,6 +308,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return integer The number of elements in the collection.
      */
+    #[\Override]
     public function count(): int
     {
         $this->initialize();
@@ -318,6 +325,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param mixed $key
      * @param mixed $value
      */
+    #[\Override]
     public function set($key, $value): void
     {
         throw new \LogicException('set() is not supported.');
@@ -329,7 +337,8 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param mixed $value
      * @return boolean Always TRUE.
      */
-    public function add($value)
+    #[\Override]
+    public function add($value): never
     {
         throw new \LogicException('Adding new entities is not supported after creation.');
     }
@@ -341,6 +350,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return boolean TRUE if the collection is empty, FALSE otherwise.
      */
+    #[\Override]
     public function isEmpty()
     {
         $this->initialize();
@@ -353,6 +363,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return ArrayIterator
      */
+    #[\Override]
     public function getIterator(): \Traversable
     {
         $this->initialize();
@@ -367,6 +378,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param Closure $func
      * @return Collection
      */
+    #[\Override]
     public function map(Closure $func)
     {
         $this->initialize();
@@ -381,6 +393,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param Closure $p The predicate used for filtering.
      * @return Collection A collection with the results of the filter operation.
      */
+    #[\Override]
     public function filter(Closure $p)
     {
         $this->initialize();
@@ -395,6 +408,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param Closure $p The predicate.
      * @return boolean TRUE, if the predicate yields TRUE for all elements, FALSE otherwise.
      */
+    #[\Override]
     public function forAll(Closure $p)
     {
         $this->initialize();
@@ -417,11 +431,12 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *               of elements where the predicate returned TRUE, the second element
      *               contains the collection of elements where the predicate returned FALSE.
      */
+    #[\Override]
     public function partition(Closure $p)
     {
         $this->initialize();
 
-        $coll1 = $coll2 = array();
+        $coll1 = $coll2 = [];
         foreach ($this->entities as $key => $element) {
             if ($p($key, $element)) {
                 $coll1[$key] = $element;
@@ -429,7 +444,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
                 $coll2[$key] = $element;
             }
         }
-        return array(new ArrayCollection($coll1), new ArrayCollection($coll2));
+        return [new ArrayCollection($coll1), new ArrayCollection($coll2)];
     }
 
     /**
@@ -437,14 +452,16 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      *
      * @return string
      */
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
-        return __CLASS__ . '@' . spl_object_hash($this);
+        return self::class . '@' . spl_object_hash($this);
     }
 
     /**
      * Clears the collection.
      */
+    #[\Override]
     public function clear(): void
     {
         throw new \LogicException('clear() is not supported.');
@@ -461,6 +478,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param int $length
      * @return array
      */
+    #[\Override]
     public function slice($offset, $length = null)
     {
         $this->initialize();
@@ -475,6 +493,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
      * @param  Criteria $criteria
      * @return Collection
      */
+    #[\Override]
     public function matching(Criteria $criteria)
     {
         $this->initialize();
@@ -514,20 +533,20 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
         }
 
         $con = $this->registry->getManagerForClass(Job::class)->getConnection();
-        $entitiesPerClass = array();
+        $entitiesPerClass = [];
         $count = 0;
         foreach ($con->query("SELECT related_class, related_id FROM jms_job_related_entities WHERE job_id = ".$this->job->getId()) as $data) {
             $count += 1;
-            $entitiesPerClass[$data['related_class']][] = json_decode($data['related_id'], true);
+            $entitiesPerClass[$data['related_class']][] = json_decode((string) $data['related_id'], true);
         }
 
         if (0 === $count) {
-            $this->entities = array();
+            $this->entities = [];
 
             return;
         }
 
-        $entities = array();
+        $entities = [];
         foreach ($entitiesPerClass as $className => $ids) {
             $em = $this->registry->getManagerForClass($className);
             $qb = $em->createQueryBuilder()
@@ -555,11 +574,13 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
         $this->entities = $entities;
     }
 
+    #[\Override]
     public function findFirst(Closure $p): mixed
     {
         throw new \LogicException('findFirst() is not supported.');
     }
 
+    #[\Override]
     public function reduce(Closure $func, $initial = null): mixed
     {
         throw new \LogicException('reduce() is not supported.');
