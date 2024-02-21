@@ -126,7 +126,7 @@ class Job implements \Stringable
     #[ORM\JoinColumn(name: 'source_job_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'dest_job_id', referencedColumnName: 'id')]
     #[ORM\ManyToMany(targetEntity: 'Job', fetch: 'EAGER')]
-    private readonly \Doctrine\Common\Collections\Collection $dependencies;
+    private \Doctrine\Common\Collections\Collection $dependencies;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $output = null;
@@ -150,10 +150,10 @@ class Job implements \Stringable
     /**
      * @var \Doctrine\Common\Collections\Collection<int, \JMS\JobQueueBundle\Entity\Job> */
     #[ORM\OneToMany(targetEntity: 'Job', mappedBy: 'originalJob', cascade: ['persist', 'remove', 'detach', 'refresh'])]
-    private readonly \Doctrine\Common\Collections\Collection $retryJobs;
+    private \Doctrine\Common\Collections\Collection $retryJobs;
 
     #[ORM\Column(type: 'blob', name: 'stackTrace', nullable: true)]
-    private ?string $stackTrace = null;
+    private $stackTrace = null;
 
     #[ORM\Column(type: 'smallint', nullable: true, options: ['unsigned' => true])]
     private ?int $runtime = null;
@@ -188,8 +188,11 @@ class Job implements \Stringable
     }
 
     public function __construct(#[ORM\Column(type: 'string')]
-    private $command, #[ORM\Column(type: 'json')]
-    private readonly array $args = [], $confirmed = true, $queue = self::DEFAULT_QUEUE, $priority = self::PRIORITY_DEFAULT)
+                                private $command, #[ORM\Column(type: 'json')]
+                                private array $args = [],
+                                $confirmed = true,
+                                $queue = self::DEFAULT_QUEUE,
+                                $priority = self::PRIORITY_DEFAULT)
     {
         if (trim((string) $queue) === '') {
             throw new \InvalidArgumentException('$queue must not be empty.');
@@ -574,12 +577,12 @@ class Job implements \Stringable
         $this->stackTrace = $ex;
     }
 
-    public function getStackTrace()
+    public function getStackTrace(): ?string
     {
         return $this->stackTrace;
     }
 
-    public function getQueue()
+    public function getQueue(): ?string
     {
         return $this->queue;
     }
