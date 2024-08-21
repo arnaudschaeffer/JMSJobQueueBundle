@@ -26,7 +26,7 @@ class ManyToAnyListener
 
     public function postLoad(\Doctrine\ORM\Event\LifecycleEventArgs $event)
     {
-        $entity = $event->getEntity();
+        $entity = $event->getObject();
         if ( ! $entity instanceof \JMS\JobQueueBundle\Entity\Job) {
             return;
         }
@@ -36,7 +36,7 @@ class ManyToAnyListener
 
     public function preRemove(LifecycleEventArgs $event)
     {
-        $entity = $event->getEntity();
+        $entity = $event->getObject();
         if ( ! $entity instanceof Job) {
             return;
         }
@@ -47,7 +47,7 @@ class ManyToAnyListener
 
     public function postPersist(\Doctrine\ORM\Event\LifecycleEventArgs $event)
     {
-        $entity = $event->getEntity();
+        $entity = $event->getObject();
         if ( ! $entity instanceof \JMS\JobQueueBundle\Entity\Job) {
             return;
         }
